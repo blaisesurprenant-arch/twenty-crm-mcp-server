@@ -6,11 +6,16 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "start:http": "node server-http.js",
+    "digest": "node daily-digest.js",
+    "digest:dry-run": "node daily-digest.js --dry-run",
     "dev": "node --inspect index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.6.0"
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "express": "^5.2.1",
+    "nodemailer": "^9.0.3"
   },
   "engines": {
     "node": ">=18"
@@ -31,10 +36,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mhenry3164/twenty-crm-mcp-server.git"
+    "url": "https://github.com/blaisesurprenant-arch/twenty-crm-mcp-server.git"
   },
   "bugs": {
-    "url": "https://github.com/mhenry3164/twenty-crm-mcp-server/issues"
+    "url": "https://github.com/blaisesurprenant-arch/twenty-crm-mcp-server/issues"
   },
-  "homepage": "https://github.com/mhenry3164/twenty-crm-mcp-server#readme"
+  "homepage": "https://github.com/blaisesurprenant-arch/twenty-crm-mcp-server#readme"
 }
