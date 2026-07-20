@@ -208,6 +208,55 @@ The server automatically discovers and supports custom fields in your Twenty CRM
 
 ---
 
+## 🏠 In-house additions (this fork)
+
+This fork adds three things on top of upstream, for self-hosting on our own VPS:
+
+### Hosted / remote mode (`server-http.js`)
+
+`index.js` still runs over stdio for local Claude Desktop use. `server-http.js` exposes the
+same tools over Streamable HTTP so this can run as a persistent service and be added to
+Claude as a remote connector.
+
+```bash
+npm run start:http
+# POST http://<host>:$PORT/mcp with header: Authorization: Bearer $MCP_AUTH_TOKEN
+```
+
+Requires `MCP_AUTH_TOKEN` (generate with `openssl rand -hex 32`) — every request must
+present it as a bearer token, or it's rejected with 401. `/healthz` is open (no auth) for
+uptime checks.
+
+### Tasks assigned to Claude
+
+- `list_workspace_members` — lists workspace members/IDs/emails (human + bot accounts).
+- `create_claude_task` — creates a task and force-assigns it to the dedicated "Claude"
+  workspace member (`CLAUDE_ASSIGNEE_ID`).
+
+Setup: invite a "Claude" member in Twenty (Settings → Members), find its ID with
+`list_workspace_members`, and set `CLAUDE_ASSIGNEE_ID` in `.env`.
+
+### Daily task digest (`daily-digest.js`)
+
+A standalone script (not an MCP tool — run by cron, not by Claude) that emails each human
+team member their own open tasks once a day. Tasks assigned to `CLAUDE_ASSIGNEE_ID` are
+excluded (that's Claude's queue, not a person's).
+
+```bash
+npm run digest:dry-run   # preview, sends nothing
+npm run digest           # sends real emails via Gmail SMTP
+```
+
+Requires `GMAIL_USER` + `GMAIL_APP_PASSWORD` (a dedicated
+[Gmail App Password](https://myaccount.google.com/apppasswords), not your normal password).
+Scheduled via crontab, e.g. daily at 9:00 AM:
+
+```
+0 9 * * * cd /opt/twenty-crm-mcp-server && /usr/bin/node daily-digest.js >> /var/log/twenty-digest.log 2>&1
+```
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
